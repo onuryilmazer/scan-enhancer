@@ -8,10 +8,16 @@ add_subdirectory(libraries/catch2_testing)
 find_package(OpenMP REQUIRED)
 
 #main executable
-add_executable(enhancer main.cpp createStbImplementations.cpp tempfile.cpp)
+add_executable(enhancer main.cpp createStbImplementations.cpp tempfile.cpp fileIO.cpp)
 target_link_libraries(enhancer PRIVATE OpenMP::OpenMP_CXX PRIVATE stb)
 
 
-#executable with the unit tests:
-add_executable(enhancer_tests tests/catch_main.cpp tests/tempfile_tests.cpp createStbImplementations.cpp tempfile.cpp)
-target_link_libraries(enhancer_tests PUBLIC OpenMP::OpenMP_CXX PUBLIC stb PUBLIC catch2)
+#executable for the unit tests:
+add_executable(enhancer_tests tests/catch_main.cpp tests/tempfile_tests.cpp tests/fileIO_tests.cpp createStbImplementations.cpp tempfile.cpp fileIO.cpp)
+target_link_libraries(enhancer_tests PRIVATE OpenMP::OpenMP_CXX PRIVATE stb PRIVATE catch2)
+
+
+#copy the testInputs folder into the build directory so the test cases have data to work with.
+add_custom_command(TARGET enhancer_tests PRE_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E copy_directory
+                    ${CMAKE_SOURCE_DIR}/resources/ $<TARGET_FILE_DIR:enhancer_tests>)
