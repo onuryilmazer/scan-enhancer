@@ -8,12 +8,12 @@ add_subdirectory(libraries/catch2_testing)
 find_package(OpenMP REQUIRED)
 
 #main executable
-add_executable(enhancer main.cpp createStbImplementations.cpp tempfile.cpp fileIO.cpp)
+add_executable(enhancer main.cpp createStbImplementations.cpp fileIO.cpp userinterface.cpp)
 target_link_libraries(enhancer PRIVATE OpenMP::OpenMP_CXX PRIVATE stb)
 
 
 #executable for the unit tests:
-add_executable(enhancer_tests tests/catch_main.cpp tests/tempfile_tests.cpp tests/fileIO_tests.cpp createStbImplementations.cpp tempfile.cpp fileIO.cpp)
+add_executable(enhancer_tests tests/catch_main.cpp tests/fileIO_tests.cpp createStbImplementations.cpp fileIO.cpp userinterface.cpp)
 target_link_libraries(enhancer_tests PRIVATE OpenMP::OpenMP_CXX PRIVATE stb PRIVATE catch2)
 
 
