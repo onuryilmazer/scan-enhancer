@@ -1,10 +1,8 @@
 #include <iostream>
 
-#include "userinterface.h"
+#include "userInterface.h"
 
 int main(int argc, char **argv) {
-    std::cout << "Hello, World!" << std::endl;
-
     CommandLineInterface interface(argc, argv);
 
     interface.parseArguments();

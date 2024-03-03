@@ -20,9 +20,6 @@ private:
     int argc;
     char** argv;
 
-    //Whether if the "interactive mode", in which the program guides the user, is enabled or not
-    bool interactive;
-
     //Path of the input directory, name of the output directory (only name, since it'll be saved inside the input directory).
     std::string inputPath, outputDirectory;
 
@@ -34,7 +31,12 @@ private:
 
     void startInteractiveMode();
 
-    bool inputIsValid();
+    bool inputIsValid(std::string& errorMessages);
+
+    //This function is necessary, because otherwise the word wrapping makes things really hard to read.
+    void print_twoColumnsLayout(std::string left, std::string right, int leftColumnWidth, int rightColumnWidth);
+
+    int getConsoleSize();
 };
 
 #endif //ENHANCER_USERINTERFACE_H
