@@ -21,7 +21,7 @@ public:
 
     bool convertToGrayscale();
 
-    bool applyAdaptiveThresholding(int windowSize, float tresholdPercentage);
+    bool applyAdaptiveThresholding(double windowSize, double tresholdPercentage);
 
 private:
     unsigned char* data;

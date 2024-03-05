@@ -58,7 +58,7 @@ TEST_CASE("Apply adaptive thresholding to images", "[correctness]") {
     for (const auto & entry : fs::directory_iterator(path)) {
         if (entry.path().filename().string().find("binarized") == std::string::npos) {  //entry.path().filename().string().find("heft") == 0 &&
             EnhancerImage img(entry.path().string());
-            img.applyAdaptiveThresholding(img.width/8, 0.15f);
+            img.applyAdaptiveThresholding(0.125, 0.15);
             img.saveImage(entry.path().string() + "_binarized.jpg", EnhancerImage::Filetype::jpg);
         }
     }

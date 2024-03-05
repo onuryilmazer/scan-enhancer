@@ -80,9 +80,11 @@ bool EnhancerImage::convertToGrayscale() {
 }
 
 
-bool EnhancerImage::applyAdaptiveThresholding(int windowSize, float tresholdPercentage) {
+bool EnhancerImage::applyAdaptiveThresholding(double windowSize, double tresholdPercentage) {
     //Adaptive thresholding works on grayscale images: check if the image is suitable first (convert if not)
     if (nrOfChannels > 1) convertToGrayscale();
+
+    int windowSize_pixels = width * windowSize;  //determine window size in pixels
 
     //Create integral image (sum of brightnesses)
     auto *integralImage = new unsigned long [width*height];
@@ -108,7 +110,7 @@ bool EnhancerImage::applyAdaptiveThresholding(int windowSize, float tresholdPerc
 
     //window variables
     int x1, x2, y1, y2;
-    int halfWindow = windowSize/2;
+    int halfWindow = windowSize_pixels/2;
 
     //Perform adaptive thresholding
     for(int column = 0; column < width; column++) {
