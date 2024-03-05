@@ -4,26 +4,25 @@
 #include <filesystem>  //requires C++17
 #include <string>
 #include <sstream>
+#include <iomanip>
 
 #include "userInterface.h"
-#include "columnPrinter.h"
+#include "termcolor.hpp"
 
-/*
- * This class handles all communication with the user
- * Our program has two modes:
- * First is the command-line tool mode, this is intended for advanced users or for automated use from within other scripts.
- * The second is the interactive mode: in this mode the program guides the user through all steps and prompts the user to give the required arguments. *
- */
 CommandLineInterface::CommandLineInterface(int argc, char** argv): argc(argc), argv(argv), windowWidth(0.125), thresholdPercentage(0.15) {}
 
 void CommandLineInterface::printHelp() {
-    std::cout << "Usage syntax: \n";
-    ColumnPrinter::print_twoColumnsLayout("--interactive:", "This starts the program in the interactive mode, where you will be guided to provide all the necessary information.");
-    ColumnPrinter::print_twoColumnsLayout("-i <path> OR --inputPath <path>:", "Path of the folder that contains your scanned images.");
-    ColumnPrinter::print_twoColumnsLayout("-o <name> OR --outputDirectory <name>:", "Name of the folder in which your enhanced images are going to be saved in.");
-    ColumnPrinter::print_twoColumnsLayout("-w <val> OR --windowWidth <val>:", "The window width that will be used in the adaptive thresholding method. This is a number between 0-1 and it is defined in terms of the width of the image, e.g. 0.125 (one-eighth).");
-    ColumnPrinter::print_twoColumnsLayout("-t <val> OR --thresholdPercentage <val>:", "The threshold percentage that will be used in the adaptive thresholding method. This is a number between 0-1 and it is defined as a percentage, e.g. 0.15 (fifteen percent).");
-    ColumnPrinter::print_twoColumnsLayout("-h OR --help:", "Show help.");
+    std::vector<std::string> lines{
+                                "Usage syntax:", "",
+                                "--interactive:", "This starts the program in the interactive mode, where you will be guided to provide all the necessary information.",
+                                "-i, --inputPath <path>:", "Path of the folder that contains your scanned images.",
+                                "-o, --outputDirectory <name>:", "Name of the folder in which your enhanced images are going to be saved in.",
+                                "-w, --windowWidth <val>:", "[Optional] The window width that will be used in the adaptive thresholding method. This is a number between 0-1 and it is defined in terms of the width of the image, e.g. 0.125 (one-eighth).",
+                                "-t, --thresholdPercentage <val>:", "[Optional] The threshold percentage that will be used in the adaptive thresholding method. This is a number between 0-1 and it is defined as a percentage, e.g. 0.15 (fifteen percent).",
+                                "-h, --help:", "Show help."
+                              };
+
+    print_twoColumnsLayout(lines);
 
     exit(1);
 }
@@ -83,10 +82,11 @@ void CommandLineInterface::parseArguments() {
     }
 
     if(readingErrors || !inputIsValid(errorMessages)) {
-        std::cout << "Invalid, missing or unknown arguments are detected:\n" << errorMessages << "\n\n";
+        std::cout << termcolor::red << "Invalid, missing or unknown arguments are detected:\n" << errorMessages << termcolor::reset << "\n";
         printHelp();
         exit(1);  //redundant, as printHelp does it anyway, but it shows intention.
     }
+
 }
 
 bool CommandLineInterface::inputIsValid(std::string& errorMessages) {
@@ -224,4 +224,90 @@ const double CommandLineInterface::getWindowWidth() {
 
 const double CommandLineInterface::getThresholdPercentage() {
     return thresholdPercentage;
+}
+
+
+//System-specific methods for Windows and Unix systems to get the console width.
+#ifdef WIN32
+    #include <windows.h>
+#else
+    #include <sys/ioctl.h>
+    #include <stdio.h>
+    #include <unistd.h>
+#endif
+
+int CommandLineInterface::getConsoleSize() {
+    #ifdef WIN32
+        CONSOLE_SCREEN_BUFFER_INFO csbi;
+        GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+        int columns = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+        return columns;
+    #else
+        struct winsize w;
+        ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+        return w.ws_col;
+    #endif
+}
+
+void CommandLineInterface::clearScreen()
+{
+    #ifdef WIN32
+        system("cls");
+    #else
+        system("clear");
+    #endif
+}
+
+std::vector<std::string> CommandLineInterface::wrapText(const std::string& text, int width) {
+    std::istringstream words(text);
+    std::string word;
+    std::vector<std::string> lines;
+    std::string currentLine;
+
+    while (words >> word) {
+        // Check if adding the next word exceeds the width
+        if (currentLine.length() + word.length() + 1 > width) {
+            lines.push_back(currentLine);
+            currentLine = word;
+        } else {
+            if (!currentLine.empty()) {
+                currentLine += " ";
+            }
+            currentLine += word;
+        }
+    }
+    // Add the last line if it exists
+    if (!currentLine.empty()) {
+        lines.push_back(currentLine);
+    }
+
+    return lines;
+}
+
+void CommandLineInterface::print_twoColumnsLayout(std::vector<std::string> lines) {
+    int width = getConsoleSize();
+
+    if (lines.size() % 2 == 1) lines.emplace_back("");
+
+    int leftWidth = 0;
+    for(int i = 0; i < lines.size(); i+=2)
+        if (lines[i].length() + 1 > leftWidth) leftWidth = lines[i].length()+1;
+
+    int rightWidth = width - leftWidth - 1;
+
+    for(int i = 0; i < lines.size(); i+=2) {
+        std::string left = lines[i], right = lines[i+1];
+
+        auto lines_leftCol = wrapText(left,leftWidth);
+        auto lines_rightCol = wrapText(right, rightWidth);
+
+        int max = (lines_leftCol.size() > lines_rightCol.size() ? lines_leftCol.size() : lines_rightCol.size());
+
+        for(int i = 0; i < max; i++) {
+            std::cout << std::left << std::setw(leftWidth) << (i < lines_leftCol.size() ? lines_leftCol[i] : "") << std::setw(rightWidth) << (i < lines_rightCol.size() ? lines_rightCol[i] : "");
+            std::cout << std::setw(0) << "\n";
+        }
+
+        std::cout << "\n";
+    }
 }

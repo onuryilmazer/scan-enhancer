@@ -53,7 +53,7 @@ bool EnhancerImage::saveImage(const std::string& path, Filetype type) {
 //Converts image to grayscale, single channel.
 bool EnhancerImage::convertToGrayscale() {
     if (nrOfChannels < 3) {
-        std::cerr << "Image can't be converted to grayscale (it may be already converted)" << std::endl;
+        std::cerr << "Image can't be converted to grayscale (it may already be converted)" << std::endl;
         return false;
     }
 
@@ -84,9 +84,7 @@ bool EnhancerImage::applyAdaptiveThresholding(double windowSize, double treshold
     //Adaptive thresholding works on grayscale images: check if the image is suitable first (convert if not)
     if (nrOfChannels > 1) convertToGrayscale();
 
-    int windowSize_pixels = width * windowSize;  //determine window size in pixels
-
-    //Create integral image (sum of brightnesses)
+    //Create the integral image (sum of brightness values within a certain area)
     auto *integralImage = new unsigned long [width*height];
 
     for(int column = 0; column < width; column++) {
@@ -109,8 +107,9 @@ bool EnhancerImage::applyAdaptiveThresholding(double windowSize, double treshold
     auto binarized = new unsigned char[width * height];
 
     //window variables
-    int x1, x2, y1, y2;
+    int windowSize_pixels = static_cast<int>(width * windowSize);   //determine the window size in pixels
     int halfWindow = windowSize_pixels/2;
+    int x1, x2, y1, y2;                                             //these temporary variables will hold the coordinates of the four ends of our window.
 
     //Perform adaptive thresholding
     for(int column = 0; column < width; column++) {
@@ -129,13 +128,14 @@ bool EnhancerImage::applyAdaptiveThresholding(double windowSize, double treshold
             if (y1 < 0) y1 = 0;
             if (y2 >= height) y2 = height-1;
 
-            //will be used to calculate the avg. intensity of the pixels
+            //this value will be used to calculate the avg. intensity of the pixels
             int nrOfPixelsInWindow = (x2-x1) * (y2-y1);
 
             //Calculate the sum of the window
             unsigned long intensitySum = integralImage[y2*width+x2] - integralImage[y1*width+x2] - integralImage[y2*width+x1] + integralImage[y1*width+x1];
 
-            //Check if the current pixel's value is x percent lower than the average (-> black) or not (-> white)
+            //Decide whether the pixel should be white or black
+            //Criterium: Whether if the current pixel's brightness value is T percent higher than the average (-> white) or not (-> black)
             bool aboveThreshold = static_cast<unsigned long>(data[index] * static_cast<unsigned long>(nrOfPixelsInWindow)) > static_cast<unsigned long>(intensitySum*(1.0-tresholdPercentage));
 
             if(aboveThreshold) {
