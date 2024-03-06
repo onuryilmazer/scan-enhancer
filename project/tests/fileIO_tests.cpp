@@ -1,5 +1,5 @@
 #include "catch.hpp"
-#include "../fileIO.h"
+#include "../EnhancerImage.h"
 #include "stb_image.h"
 #include <iostream>
 #include <filesystem>
@@ -56,7 +56,7 @@ TEST_CASE("Apply adaptive thresholding to images", "[correctness]") {
     std::string path = "test_input";
 
     for (const auto & entry : fs::directory_iterator(path)) {
-        if (entry.path().filename().string().find("binarized") == std::string::npos) {  //entry.path().filename().string().find("heft") == 0 &&
+        if (!entry.is_directory() && entry.path().filename().string().find("binarized") == std::string::npos) {
             EnhancerImage img(entry.path().string());
             img.applyAdaptiveThresholding(0.125, 0.15);
             img.saveImage(entry.path().string() + "_binarized.jpg", EnhancerImage::Filetype::jpg);

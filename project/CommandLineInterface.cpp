@@ -5,11 +5,16 @@
 #include <string>
 #include <sstream>
 #include <iomanip>
+#include <algorithm>
+#include <omp.h>
 
-#include "userInterface.h"
+#include "CommandLineInterface.h"
 #include "termcolor.hpp"
 
-CommandLineInterface::CommandLineInterface(int argc, char** argv): argc(argc), argv(argv), windowWidth(0.125), thresholdPercentage(0.15) {}
+CommandLineInterface::CommandLineInterface(int argc, char** argv): argc(argc), argv(argv), windowWidth(0.125), thresholdPercentage(0.15) {
+    numberOfThreads = omp_get_num_procs();
+    parseArguments();
+}
 
 void CommandLineInterface::printHelp() {
     std::vector<std::string> lines{
@@ -19,12 +24,13 @@ void CommandLineInterface::printHelp() {
                                 "-o, --outputDirectory <name>:", "Name of the folder in which your enhanced images are going to be saved in.",
                                 "-w, --windowWidth <val>:", "[Optional] The window width that will be used in the adaptive thresholding method. This is a number between 0-1 and it is defined in terms of the width of the image, e.g. 0.125 (one-eighth).",
                                 "-t, --thresholdPercentage <val>:", "[Optional] The threshold percentage that will be used in the adaptive thresholding method. This is a number between 0-1 and it is defined as a percentage, e.g. 0.15 (fifteen percent).",
+                                "-nt, --numberOfThreads <val>", "[Optional] Allows you to set the number of threads that will be created by the program when processing images. Default is the number of logical cores. Set this to 1 if you want the program to run sequentially.",
+                                "-v, --verbose <true/false>", "[Optional] Print debugging information (default = true)",
+                                "-bm, --benchmark", "[Optional] Run a benchmark that tests the change in runtime depending on the number of threads used. You can plot the resulting CSV file using your scripting language of choice, like Python or R. (default = false)",
                                 "-h, --help:", "Show help."
                               };
 
     print_twoColumnsLayout(lines);
-
-    exit(1);
 }
 
 void CommandLineInterface::parseArguments() {
@@ -33,7 +39,6 @@ void CommandLineInterface::parseArguments() {
     //Getopt still works when using MinGW or git bash but that isn't ideal for portability.
 
     std::string errorMessages;
-    bool readingErrors = false;
 
     for(int i = 1; i < argc; i++) {
         std::string arg = argv[i];  //get the current argument.
@@ -60,8 +65,7 @@ void CommandLineInterface::parseArguments() {
             if (i + 1 < argc) {
                 std::istringstream numberstream(argv[++i]);
                 if (!(numberstream >> windowWidth)) {
-                    errorMessages += "Invalid windowWidth argument.\n";
-                    readingErrors = true;
+                    errorMessages += "Invalid --windowWidth argument.\n";
                 }
             }
         }
@@ -69,29 +73,50 @@ void CommandLineInterface::parseArguments() {
             if (i + 1 < argc) {
                 std::istringstream numberstream(argv[++i]);
                 if (!(numberstream >> thresholdPercentage)) {
-                    errorMessages += "Invalid thresholdPercentage argument.\n";
-                    readingErrors = true;
+                    errorMessages += "Invalid --thresholdPercentage argument.\n";
                 }
             }
+        }
+        else if (arg == "-nt" || arg == "--numberOfThreads") {
+            if (i + 1 < argc) {
+                std::istringstream numberstream(argv[++i]);
+                if (!(numberstream >> numberOfThreads)) {
+                    errorMessages += "Invalid --numberOfThreads argument.\n";
+                }
+            }
+        }
+        else if (arg == "-v" || arg == "--verbose") {
+            if (i + 1 < argc) {
+                std::string answer = argv[++i];
+                std::transform(answer.begin(), answer.end(), answer.begin(), [](unsigned char c){ return std::tolower(c); });
+
+                if (answer == "true" || answer == "y") verbose = true;
+                else if (answer == "false" || answer == "n") verbose = false;
+                else {
+                    errorMessages += "Invalid --verbose argument.\n";
+                }
+            }
+        }
+        else if (arg == "-bm" || arg == "--benchmark") {
+            benchmark = true;
         }
         else {
             std::string type = arg.substr(0,1) == "-" ? "argument: " : "value: ";
             errorMessages += "Unknown " + type + arg + "\n";
-            readingErrors = true;
         }
     }
 
-    if(readingErrors || !inputIsValid(errorMessages)) {
+    validateInput(errorMessages);
+
+    if(!errorMessages.empty()) {
         std::cout << termcolor::red << "Invalid, missing or unknown arguments are detected:\n" << errorMessages << termcolor::reset << "\n";
         printHelp();
-        exit(1);  //redundant, as printHelp does it anyway, but it shows intention.
+        exit(1);
     }
 
 }
 
-bool CommandLineInterface::inputIsValid(std::string& errorMessages) {
-    //TODO: add checks for the paths, i.e. if the input folder really exists and whether if an output folder can be created there.
-
+bool CommandLineInterface::validateInput(std::string& errorMessages) {
     errorMessages = "";
 
     bool valid = true;
@@ -100,9 +125,15 @@ bool CommandLineInterface::inputIsValid(std::string& errorMessages) {
         errorMessages += "Input path can't be empty.\n";
         valid = false;
     }
+    else if (!std::filesystem::exists(inputPath)) {
+        errorMessages += "The specified folder does not exist.\n";
+    }
+    else if (!std::filesystem::is_directory(inputPath)) {
+        errorMessages += "The specified path is not a directory.\n";
+    }
 
     if (outputDirectory.empty()) {
-        errorMessages += "Output directory can't be empty.\n";
+        errorMessages += "An output directory must be specified.\n";
         valid = false;
     }
 
@@ -116,7 +147,35 @@ bool CommandLineInterface::inputIsValid(std::string& errorMessages) {
         valid = false;
     }
 
+    if (numberOfThreads <= 0) {
+        errorMessages += "Number of threads must be positive.\n";
+        valid = false;
+    }
+
     return valid;
+}
+
+void CommandLineInterface::printDebugInformation(const std::string& message, MessageType type) const {
+    if (verbose) {
+        switch(type) {
+            case Error:
+                std::cout << termcolor::red;
+                break;
+
+            case Success:
+                std::cout << termcolor::green;
+                break;
+
+            case Information:
+                std::cout << termcolor::bright_grey;
+                break;
+
+            default:
+                break;
+        }
+
+        std::cout << message << termcolor::reset;
+    }
 }
 
 void CommandLineInterface::startInteractiveMode() {
@@ -128,21 +187,21 @@ void CommandLineInterface::startInteractiveMode() {
             }
         }
 
-        std::cout << "Folders in current directory:\n";
+        std::cout << "Folders that are in the current working directory:\n";
         for (size_t i = 0; i < folders.size(); ++i) {
             std::cout << i + 1 << ". " << folders[i] << '\n';
         }
 
-        std::cout << folders.size()+1 << ". Refresh (I've copied my image folder in the same folder as the executable just now)." << "\n";
+        std::cout << folders.size()+1 << ". Refresh (I've copied my image folder to the working directory)." << "\n";
 
         int choice;
-        std::cout << "Enter the number of the folder that contains your images: ";
+        std::cout << "Enter the number of the folder that contains your scanned images: ";
         std::cin >> choice;
 
         if (std::cin.fail()) {
-            std::cout << "Please enter an integer.\n" << std::endl;
+            std::cout << "Please enter a number.\n" << std::endl;
             std::cin.clear();  //clear the error flag
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');  //ignore the lingering input.
+            std::cin.ignore(10000, '\n');  //ignore the lingering input.
             continue;  //restart the loop
         }
 
@@ -158,17 +217,17 @@ void CommandLineInterface::startInteractiveMode() {
         }
     }
 
-    std::cout << "Enter the desired name of the output folder: ";
+    std::cout << "Enter a name for the folder in which the resulting images are going to be saved in: ";
     std::cin >> outputDirectory;
 
     std::string input;
     double widthInput = 0;
 
     //from this point on "getline" is used, so we clean the "\n" cin leaves behind one final time (getline does not leave a "\n" in the buffer)
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::cin.ignore(10000, '\n');
 
     while(true) {
-        std::cout << "Enter the window width of the adaptive thresholding algorithm, in terms of the image width, i.e. a floating point number between 0 and 1 (press enter for the default value of 0.125): ";
+        std::cout << "Enter the window width of the adaptive thresholding algorithm, in terms of the image width, (press enter for the default value of 0.125): ";
         std::getline(std::cin, input);
         if (input.empty()) {
             windowWidth = 0.125;
@@ -189,7 +248,7 @@ void CommandLineInterface::startInteractiveMode() {
 
     double thresholdInput = 0;
     while(true) {
-        std::cout << "Enter the threshold percentage of the adaptive thresholding algorithm, i.e. a floating point number between 0 and 1 (press enter for the default value of 0.15): ";
+        std::cout << "Enter the threshold percentage of the adaptive thresholding algorithm, (press enter for the default value of 0.15): ";
         std::getline(std::cin, input);
         if (input.empty()) {
             thresholdPercentage = 0.15;
@@ -205,6 +264,26 @@ void CommandLineInterface::startInteractiveMode() {
                 thresholdPercentage = thresholdInput;
                 break;
             }
+        }
+    }
+
+    std::string answer;
+    while(true) {
+        std::cout << "Do you want the debug information to be printed? Y/n: \n";
+        std::getline(std::cin, answer);
+
+        std::transform(answer.begin(), answer.end(), answer.begin(), [](unsigned char c){ return std::tolower(c); });
+
+        if (answer == "true" || answer == "y") {
+            verbose = true;
+            break;
+        }
+        else if (answer == "false" || answer == "n") {
+            verbose = false;
+            break;
+        }
+        else {
+            std::cout << "Invalid response: please answer with a y or n\n";
         }
     }
 }
@@ -224,6 +303,22 @@ const double CommandLineInterface::getWindowWidth() {
 
 const double CommandLineInterface::getThresholdPercentage() {
     return thresholdPercentage;
+}
+
+const int CommandLineInterface::getNumberOfThreads() {
+    return numberOfThreads;
+}
+
+void CommandLineInterface::setNumberOfThreads(int number) {
+    numberOfThreads = number;
+}
+
+void CommandLineInterface::setVerbose(bool mode) {
+    verbose = mode;
+}
+
+bool CommandLineInterface::benchmarkMode() {
+    return benchmark;
 }
 
 

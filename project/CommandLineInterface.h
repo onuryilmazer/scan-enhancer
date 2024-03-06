@@ -1,5 +1,5 @@
-#ifndef ENHANCER_USERINTERFACE_H
-#define ENHANCER_USERINTERFACE_H
+#ifndef ENHANCER_COMMANDLINEINTERFACE_H
+#define ENHANCER_COMMANDLINEINTERFACE_H
 
 #include <iostream>
 #include <vector>
@@ -20,7 +20,15 @@ public:
     const std::string& getOutputDirectory();
     const double getWindowWidth();
     const double getThresholdPercentage();
+    const int getNumberOfThreads();
+    void setNumberOfThreads(int number);
+    void setVerbose(bool mode);
 
+    bool benchmarkMode();
+
+    //this function only prints if the user has set the "verbose" argument to true.
+    enum MessageType{Error, Success, Information};
+    void printDebugInformation(const std::string& message, MessageType type) const;
 
 private:
     //these are the parameters of the main function, they contain the arguments the user passed into our program when they started it.
@@ -34,11 +42,19 @@ private:
     double windowWidth;
     double thresholdPercentage;
 
+    //OpenMP parameters
+    int numberOfThreads;
+
+    //Whether if debugging information should be printed
+    bool verbose = true;
+
+    bool benchmark = false;
+
     static void printHelp();
 
     void startInteractiveMode();
 
-    bool inputIsValid(std::string& errorMessages);
+    bool validateInput(std::string& errorMessages);
 
     //This is for printing a command-line argument on the left, and its description on the right. It prevents the built-in word wrapping of the console from making things really hard to read.
     static void print_twoColumnsLayout(std::vector<std::string> lines);
@@ -53,4 +69,4 @@ private:
     static std::vector<std::string> wrapText(const std::string& text, int width);
 };
 
-#endif //ENHANCER_USERINTERFACE_H
+#endif //ENHANCER_COMMANDLINEINTERFACE_H

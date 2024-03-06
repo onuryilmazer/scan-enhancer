@@ -1,24 +1,40 @@
-#include "fileIO.h"
-#include "stb_image.h"
-#include "stb_image_write.h"
-
 #include <string>
 #include <iostream>
-#include <stdexcept>
+#include <algorithm>
+#include <cstdint> //for termcolor
+#include <omp.h>
 
+#include "EnhancerImage.h"
+#include "stb_image.h"
+#include "stb_image_write.h"
+#include "termcolor.hpp"
 
 //Constructor:
 EnhancerImage::EnhancerImage(const std::string& path) {
     data = stbi_load(path.c_str(), &width, &height, &nrOfChannels, 0);
 
     if (!data) {
-        std::cerr << "Image failed to load at path: " << path << std::endl;
+        std::cerr << termcolor::red << "Image failed to load at path: " << path << termcolor::reset << std::endl;
     }
 }
+
+std::list<std::string> EnhancerImage::supportedFiletypes = {".jpg", ".png", ".bmp"};
 
 //Destructor:
 EnhancerImage::~EnhancerImage() {
     stbi_image_free(data);
+}
+
+bool EnhancerImage::extensionIsSupported(std::string extension) {
+    //convert the extension to lowercase before comparing it with our known extensions
+    std::transform(extension.begin(), extension.end(), extension.begin(), [](unsigned char c){ return std::tolower(c); });
+
+    // Check the extension to see if the file is an image
+    for (const std::string& validExtension : EnhancerImage::supportedFiletypes) {
+        if (extension == validExtension) return true;
+    }
+
+    return false;
 }
 
 //Check if the image was loaded correctly:
@@ -53,7 +69,7 @@ bool EnhancerImage::saveImage(const std::string& path, Filetype type) {
 //Converts image to grayscale, single channel.
 bool EnhancerImage::convertToGrayscale() {
     if (nrOfChannels < 3) {
-        std::cerr << "Image can't be converted to grayscale (it may already be converted)" << std::endl;
+        std::cerr << termcolor::red << "Image can't be converted to grayscale (it may already be converted)" << termcolor::reset << std::endl;
         return false;
     }
 
@@ -114,6 +130,7 @@ bool EnhancerImage::applyAdaptiveThresholding(double windowSize, double treshold
     //Perform adaptive thresholding
     for(int column = 0; column < width; column++) {
         for(int row = 0; row < height; row++) {
+
             int index = row*width + column;
 
             //Calculate the SxS window:

@@ -1,7 +1,8 @@
-#ifndef ENHANCER_FILEIO_H
-#define ENHANCER_FILEIO_H
+#ifndef ENHANCER_ENHANCERIMAGE_H
+#define ENHANCER_ENHANCERIMAGE_H
 
 #include <string>
+#include <list>
 
 class EnhancerImage {
 public:
@@ -15,6 +16,8 @@ public:
 
     enum Filetype {jpg, png, bmp};
 
+    static bool extensionIsSupported(std::string extension);
+
     bool imageIsLoaded();
 
     bool saveImage(const std::string& path, Filetype type);
@@ -25,7 +28,7 @@ public:
 
 private:
     unsigned char* data;
+    static std::list<std::string> supportedFiletypes;
 };
 
-
-#endif //ENHANCER_FILEIO_H
+#endif //ENHANCER_ENHANCERIMAGE_H
