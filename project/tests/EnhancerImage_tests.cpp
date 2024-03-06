@@ -32,7 +32,7 @@ TEST_CASE("Try to save an image in different formats", "[correctness]") {
     stbi_info("test_input/inputfile1_testsave.bmp", &savedW, &savedH, &savedDim);
     REQUIRE( (savedW == 1562 && savedH == 1200 && savedDim == 3) );
 
-    std::cout << "Please manually inspect the output folder to see if the image/s are free from any visual artifacts." << std::endl;
+    std::cout << "Image save test complete. Please also manually inspect the output folder to see if the image/s are free from any visual artifacts." << std::endl;
 }
 
 TEST_CASE("Turn image into grayscale, save & load it back to check if everything is correct", "[correctness]") {
@@ -49,7 +49,7 @@ TEST_CASE("Turn image into grayscale, save & load it back to check if everything
 
     REQUIRE( (img2.width == originalWidth && img2.height == originalHeight) );
 
-    std::cout << "Please manually inspect the output folder to see if the image/s are free from any visual artifacts." << std::endl;
+    std::cout << "Grayscale conversion test complete. Please also manually inspect the output folder to see if the image/s are free from any visual artifacts." << std::endl;
 }
 
 TEST_CASE("Apply adaptive thresholding to images", "[correctness]") {
@@ -63,5 +63,5 @@ TEST_CASE("Apply adaptive thresholding to images", "[correctness]") {
         }
     }
 
-    std::cout << "Please manually inspect the output folder to see if the image/s are free from any visual artifacts." << std::endl;
+    std::cout << "Adaptive thresholding test complete. Please also manually inspect the output folder to see if the image/s are free from any visual artifacts." << std::endl;
 }

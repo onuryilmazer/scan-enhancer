@@ -21,7 +21,7 @@ target_link_options(enhancer PRIVATE -static-libgcc -static-libstdc++)
 
 
 #executable for the unit tests:
-add_executable(enhancer_tests tests/catch_main.cpp tests/fileIO_tests.cpp CreateStbImplementations.cpp EnhancerImage.cpp CommandLineInterface.cpp BatchProcessor.cpp)
+add_executable(enhancer_tests tests/catch_main.cpp tests/EnhancerImage_tests.cpp CreateStbImplementations.cpp EnhancerImage.cpp CommandLineInterface.cpp BatchProcessor.cpp)
 target_link_libraries(enhancer_tests PRIVATE OpenMP::OpenMP_CXX PRIVATE stb PRIVATE catch2 PRIVATE termcolor)
 
 target_link_options(enhancer_tests PRIVATE -static-libgcc -static-libstdc++)

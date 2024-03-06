@@ -126,10 +126,10 @@ bool CommandLineInterface::validateInput(std::string& errorMessages) {
         valid = false;
     }
     else if (!std::filesystem::exists(inputPath)) {
-        errorMessages += "The specified folder does not exist.\n";
+        errorMessages += "The specified input folder does not exist.\n";
     }
     else if (!std::filesystem::is_directory(inputPath)) {
-        errorMessages += "The specified path is not a directory.\n";
+        errorMessages += "The specified input path is not a directory.\n";
     }
 
     if (outputDirectory.empty()) {

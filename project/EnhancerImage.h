@@ -4,6 +4,11 @@
 #include <string>
 #include <list>
 
+/*
+ * This class defines a custom type called "EnhancerImage" that stores the image data we read from the disk
+ * and it also has some additional core functionality related to those images - like converting images into grayscale etc.
+ * */
+
 class EnhancerImage {
 public:
     int width, height, nrOfChannels;
