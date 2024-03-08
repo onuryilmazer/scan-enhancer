@@ -98,7 +98,15 @@ void CommandLineInterface::parseArguments() {
             }
         }
         else if (arg == "-bm" || arg == "--benchmark") {
-            benchmark = true;
+            if (i + 1 < argc) {
+                std::istringstream numberstream(argv[++i]);
+                if (!(numberstream >> benchmark)) {
+                    errorMessages += "Invalid --benchmark argument.\n";
+                    if (benchmark < 0 || benchmark > 2) {
+                        errorMessages += "Invalid argument: 1 for Thread number benchmark, 2 for Pixel number benchmark.\n";
+                    }
+                }
+            }
         }
         else {
             std::string type = arg.substr(0,1) == "-" ? "argument: " : "value: ";

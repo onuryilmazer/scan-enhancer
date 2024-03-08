@@ -10,7 +10,7 @@ public:
 
 
     void benchmark_nrOfThreads();
-
+    void benchmark_nrOfPixels();
 private:
     void processFolder();
     CommandLineInterface& cli;

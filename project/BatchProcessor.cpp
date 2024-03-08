@@ -9,8 +9,11 @@
 #include "EnhancerImage.h"
 
 BatchProcessor::BatchProcessor(CommandLineInterface& cli) : cli(cli) {
-    if (cli.benchmarkMode()) {
+    if (cli.benchmarkMode() == 1) {
         benchmark_nrOfThreads();
+    }
+    else if (cli.benchmarkMode() == 2) {
+        //pixel benchmark function
     }
     else {
         processFolder();
@@ -54,7 +57,7 @@ void BatchProcessor::processFolder() {
         EnhancerImage image(entry.string());
 
         //Apply the adaptive thresholding method to make the more readable
-        image.applyAdaptiveThresholding(cli.getWindowWidth(), cli.getThresholdPercentage());
+        image.applyAdaptiveThresholding(cli, cli.getWindowWidth(), cli.getThresholdPercentage());
 
         //Save the processed image back to the disk
         std::string newFilename = entry.stem().string()+"_binarized.jpg";
@@ -99,4 +102,8 @@ void BatchProcessor::benchmark_nrOfThreads() {
 
     std::cout << "Benchmark completed" << std::endl;
 
+}
+
+void BatchProcessor::benchmark_nrOfPixels() {
+    //todo
 }

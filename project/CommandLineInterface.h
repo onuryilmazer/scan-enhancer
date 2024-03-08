@@ -51,7 +51,7 @@ private:
     bool verbose = true;
 
     //Benchmarking mode:
-    bool benchmark = false;
+    int benchmark = 0;
 
     //Prints the expected syntax when the user provides invalid input:
     static void printHelp();

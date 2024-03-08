@@ -3,6 +3,7 @@
 
 #include <string>
 #include <list>
+#include "CommandLineInterface.h"
 
 /*
  * This class defines a custom type called "EnhancerImage" that stores the image data we read from the disk
@@ -27,12 +28,13 @@ public:
 
     bool saveImage(const std::string& path, Filetype type);
 
-    bool convertToGrayscale();
+    bool convertToGrayscale(CommandLineInterface& cli);
 
-    bool applyAdaptiveThresholding(double windowSize, double tresholdPercentage);
+    bool applyAdaptiveThresholding(CommandLineInterface& cli, double windowSize, double tresholdPercentage);
 
 private:
     unsigned char* data;
+
     static std::list<std::string> supportedFiletypes;
 };
 

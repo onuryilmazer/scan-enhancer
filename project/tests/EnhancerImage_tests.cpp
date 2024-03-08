@@ -3,7 +3,9 @@
 #include "stb_image.h"
 #include <iostream>
 #include <filesystem>
+#include "../CommandLineInterface.h"
 namespace fs = std::filesystem;
+
 
 
 TEST_CASE("Try to load a known image", "[correctness]") {
@@ -40,9 +42,9 @@ TEST_CASE("Turn image into grayscale, save & load it back to check if everything
     EnhancerImage img("test_input/inputfile1.jpg");
     int originalWidth = img.width;
     int originalHeight = img.height;
-
+    CommandLineInterface& cli = cli;
     //convert and save to disk:
-    img.convertToGrayscale();
+    img.convertToGrayscale(cli);
     img.saveImage("test_input/inputfile1_grayscale.jpg", EnhancerImage::Filetype::jpg);
 
     EnhancerImage img2("test_input/inputfile1_grayscale.jpg");
@@ -54,11 +56,12 @@ TEST_CASE("Turn image into grayscale, save & load it back to check if everything
 
 TEST_CASE("Apply adaptive thresholding to images", "[correctness]") {
     std::string path = "test_input";
+    CommandLineInterface& cli = cli;
 
     for (const auto & entry : fs::directory_iterator(path)) {
         if (!entry.is_directory() && entry.path().filename().string().find("binarized") == std::string::npos) {
             EnhancerImage img(entry.path().string());
-            img.applyAdaptiveThresholding(0.125, 0.15);
+            img.applyAdaptiveThresholding(cli, 0.125, 0.15);
             img.saveImage(entry.path().string() + "_binarized.jpg", EnhancerImage::Filetype::jpg);
         }
     }
