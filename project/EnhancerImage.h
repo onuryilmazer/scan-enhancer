@@ -5,9 +5,10 @@
 #include <list>
 
 /*
- * This class defines a custom type called "EnhancerImage" that stores the image data we read from the disk
- * and it also has some additional core functionality related to those images - like converting images into grayscale etc.
- * */
+
+This class defines a custom type called "EnhancerImage" that stores the image data we read from the disk
+and it also has some additional core functionality related to those images - like converting images into grayscale etc.
+*/
 
 class EnhancerImage {
 public:
@@ -27,13 +28,14 @@ public:
 
     bool saveImage(const std::string& path, Filetype type);
 
-    bool convertToGrayscale();
+    bool convertToGrayscale(int nrOfThreads);
 
-    bool applyAdaptiveThresholding(double windowSize, double tresholdPercentage);
+    bool applyAdaptiveThresholding(int nrOfThreads, double windowSize, double tresholdPercentage);
 
 private:
     unsigned char* data;
     static std::list<std::string> supportedFiletypes;
+
 };
 
 #endif //ENHANCER_ENHANCERIMAGE_H

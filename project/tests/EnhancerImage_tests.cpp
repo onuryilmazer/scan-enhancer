@@ -2,6 +2,7 @@
 #include "../EnhancerImage.h"
 #include "stb_image.h"
 #include <iostream>
+#include <omp.h>
 #include <filesystem>
 namespace fs = std::filesystem;
 
@@ -42,7 +43,8 @@ TEST_CASE("Turn image into grayscale, save & load it back to check if everything
     int originalHeight = img.height;
 
     //convert and save to disk:
-    img.convertToGrayscale();
+    int nrOfThreads = omp_get_num_procs();
+    img.convertToGrayscale(nrOfThreads);
     img.saveImage("test_input/inputfile1_grayscale.jpg", EnhancerImage::Filetype::jpg);
 
     EnhancerImage img2("test_input/inputfile1_grayscale.jpg");
@@ -54,11 +56,12 @@ TEST_CASE("Turn image into grayscale, save & load it back to check if everything
 
 TEST_CASE("Apply adaptive thresholding to images", "[correctness]") {
     std::string path = "test_input";
+    int nrOfThreads = omp_get_num_procs();
 
     for (const auto & entry : fs::directory_iterator(path)) {
         if (!entry.is_directory() && entry.path().filename().string().find("binarized") == std::string::npos) {
             EnhancerImage img(entry.path().string());
-            img.applyAdaptiveThresholding(0.125, 0.15);
+            img.applyAdaptiveThresholding(nrOfThreads, 0.125, 0.15);
             img.saveImage(entry.path().string() + "_binarized.jpg", EnhancerImage::Filetype::jpg);
         }
     }

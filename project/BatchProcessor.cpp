@@ -46,7 +46,7 @@ void BatchProcessor::processFolder() {
     int processed = 0;
 
     //iterate through the files in the given input directory
-    #pragma omp parallel for schedule(dynamic, 1)
+#pragma omp parallel for schedule(dynamic, 1)
     for (int i = 0; i < files.size(); i++) {
         std::filesystem::path entry = files[i];
 
@@ -54,7 +54,7 @@ void BatchProcessor::processFolder() {
         EnhancerImage image(entry.string());
 
         //Apply the adaptive thresholding method to make the more readable
-        image.applyAdaptiveThresholding(cli.getWindowWidth(), cli.getThresholdPercentage());
+        image.applyAdaptiveThresholding(cli.getNumberOfThreads(), cli.getWindowWidth(), cli.getThresholdPercentage());
 
         //Save the processed image back to the disk
         std::string newFilename = entry.stem().string()+"_binarized.jpg";
@@ -64,7 +64,7 @@ void BatchProcessor::processFolder() {
         int result = image.saveImage(newPath.string(), EnhancerImage::jpg);
 
         //debug
-        #pragma omp critical
+#pragma omp critical
         {
             cli.printDebugInformation(std::to_string(++processed) + " / " + std::to_string(files.size()) + " ", CommandLineInterface::MessageType::Information);
             if (result) cli.printDebugInformation(newPath.filename().string() + " has been saved successfully.\n", CommandLineInterface::MessageType::Success);

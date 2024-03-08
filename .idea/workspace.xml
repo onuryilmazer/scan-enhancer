@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="CMakePresetLoader">{
+  &quot;useNewFormat&quot;: true
+}</component>
+  <component name="CMakeReloadState">
+    <option name="reloaded" value="true" />
+  </component>
+  <component name="CMakeRunConfigurationManager">
+    <generated>
+      <config projectName="ENHANCER" targetName="catch2" />
+      <config projectName="ENHANCER" targetName="enhancer_tests" />
+      <config projectName="ENHANCER" targetName="stb" />
+      <config projectName="ENHANCER" targetName="termcolor" />
+      <config projectName="ENHANCER" targetName="enhancer" />
+    </generated>
+  </component>
+  <component name="CMakeSettings">
+    <configurations>
+      <configuration PROFILE_NAME="Debug" ENABLED="true" CONFIG_NAME="Debug" />
+    </configurations>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="1f38ca02-b6a4-48aa-924b-9a524f5fc3d6" name="Changes" comment="parallelizing convertToGrayScale">
+      <change beforePath="$PROJECT_DIR$/project/BatchProcessor.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/project/BatchProcessor.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project/EnhancerImage.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/project/EnhancerImage.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project/EnhancerImage.h" beforeDir="false" afterPath="$PROJECT_DIR$/project/EnhancerImage.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project/tests/EnhancerImage_tests.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/project/tests/EnhancerImage_tests.cpp" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="HARD" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "BIRDPERS0N"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings">
+    <option name="selectedUrlAndAccountId">
+      <UrlAndAccount>
+        <option name="accountId" value="55930573-4bd7-4e34-8b1a-cd6a8f356621" />
+        <option name="url" value="https://github.com/onuryilmazer/algorithmengineering-project.git" />
+      </UrlAndAccount>
+    </option>
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectApplicationVersion">
+    <option name="ide" value="CLion" />
+    <option name="majorVersion" value="2023" />
+    <option name="minorVersion" value="3.2" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
+  <component name="ProjectId" id="2dMETSAxC6abpnxxB7KdLNdRAm8" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "CMake Application.enhancer.executor": "Run",
+    "Catch.Apply adaptive thresholding to images.executor": "Run",
+    "Catch.Try to load a known image.executor": "Run",
+    "Catch.Try to save an image in different formats.executor": "Run",
+    "Catch.Turn image into grayscale, save & load it back to check if everything is correct.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "ctest.advertisement.all.test.configuration.is.created": "true",
+    "git-widget-placeholder": "Temp",
+    "last_opened_file_path": "C:/Users/Lisa/CLionProjects/algorithmengineering-project/project/CMakeLists.txt",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Lisa\CLionProjects\algorithmengineering-project\project\cmake-build-debug\test_input" />
+      <recent name="C:\Users\Lisa\CLionProjects\algorithmengineering-project\project\cmake-build-debug" />
+      <recent name="C:\Users\Lisa\CLionProjects\algorithmengineering-project\project\resources\img" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Lisa\CLionProjects\algorithmengineering-project\project\resources\img" />
+      <recent name="C:\Users\Lisa\CLionProjects\algorithmengineering-project\project\cmake-build-debug\test_input" />
+    </key>
+  </component>
+  <component name="RunManager" selected="CMake Application.enhancer">
+    <configuration name="Apply adaptive thresholding to images" type="CMakeCatchTestRunConfigurationType" factoryName="Catch Test" temporary="true" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ENHANCER" TARGET_NAME="enhancer_tests" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="ENHANCER" RUN_TARGET_NAME="enhancer_tests" TEST_CLASS="[correctness]" TEST_METHOD="Apply adaptive thresholding to images" TEST_MODE="SUITE_TEST">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="BeforeTestRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Try to load a known image" type="CMakeCatchTestRunConfigurationType" factoryName="Catch Test" temporary="true" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ENHANCER" TARGET_NAME="enhancer_tests" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="ENHANCER" RUN_TARGET_NAME="enhancer_tests" TEST_CLASS="[correctness]" TEST_METHOD="Try to load a known image" TEST_MODE="SUITE_TEST">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="BeforeTestRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Try to save an image in different formats" type="CMakeCatchTestRunConfigurationType" factoryName="Catch Test" temporary="true" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ENHANCER" TARGET_NAME="enhancer_tests" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="ENHANCER" RUN_TARGET_NAME="enhancer_tests" TEST_CLASS="[correctness]" TEST_METHOD="Try to save an image in different formats" TEST_MODE="SUITE_TEST">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="BeforeTestRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Turn image into grayscale, save &amp; load it back to check if everything is correct" type="CMakeCatchTestRunConfigurationType" factoryName="Catch Test" temporary="true" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ENHANCER" TARGET_NAME="enhancer_tests" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="ENHANCER" RUN_TARGET_NAME="enhancer_tests" TEST_CLASS="[correctness]" TEST_METHOD="Turn image into grayscale, save &amp; load it back to check if everything is correct" TEST_MODE="SUITE_TEST">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="BeforeTestRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="catch2" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ENHANCER" TARGET_NAME="catch2" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="enhancer" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="--interactive -nt 8" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ENHANCER" TARGET_NAME="enhancer" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="ENHANCER" RUN_TARGET_NAME="enhancer">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="stb" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ENHANCER" TARGET_NAME="stb" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="termcolor" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ENHANCER" TARGET_NAME="termcolor" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="All CTest" type="CTestRunConfiguration" factoryName="CTestRun" PROGRAM_PARAMS="--extra-verbose" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" WORKING_DIR="file://$CMakeCurrentLocalGenerationDir$" PASS_PARENT_ENVS_2="true" CONFIG_NAME="Debug" RUN_PATH="$CTestCurrentExecutableName$" EXPLICIT_BUILD_TARGET_NAME="all" TEST_MODE="SUITE_TEST">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="BeforeTestRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="Catch.Try to save an image in different formats" />
+      <item itemvalue="Catch.Apply adaptive thresholding to images" />
+      <item itemvalue="Catch.Try to load a known image" />
+      <item itemvalue="Catch.Turn image into grayscale, save &amp; load it back to check if everything is correct" />
+      <item itemvalue="CMake Application.enhancer" />
+      <item itemvalue="CMake Application.catch2" />
+      <item itemvalue="CMake Application.stb" />
+      <item itemvalue="CMake Application.termcolor" />
+      <item itemvalue="CTest Application.All CTest" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Catch.Apply adaptive thresholding to images" />
+        <item itemvalue="Catch.Turn image into grayscale, save &amp; load it back to check if everything is correct" />
+        <item itemvalue="Catch.Try to save an image in different formats" />
+        <item itemvalue="Catch.Try to load a known image" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="1f38ca02-b6a4-48aa-924b-9a524f5fc3d6" name="Changes" comment="" />
+      <created>1709809555107</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1709809555107</updated>
+      <workItem from="1709809558242" duration="19143000" />
+      <workItem from="1709885337815" duration="14771000" />
+      <workItem from="1709919953987" duration="2116000" />
+    </task>
+    <task id="LOCAL-00001" summary="temporary version">
+      <option name="closed" value="true" />
+      <created>1709916596779</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1709916596779</updated>
+    </task>
+    <task id="LOCAL-00002" summary="parallelizing convertToGrayScale">
+      <option name="closed" value="true" />
+      <created>1709920403472</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1709920403472</updated>
+    </task>
+    <task id="LOCAL-00003" summary="parallelizing convertToGrayScale">
+      <option name="closed" value="true" />
+      <created>1709921424443</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1709921424443</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VCPKGProject">
+    <isAutomaticCheckingOnLaunch value="false" />
+    <isAutomaticFoundErrors value="true" />
+    <isAutomaticReloadCMake value="true" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="RECENT_FILTERS">
+      <map>
+        <entry key="Branch">
+          <value>
+            <list>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="main" />
+                </option>
+              </RecentGroup>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="Temp" />
+                </option>
+              </RecentGroup>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="origin/Temp" />
+                </option>
+              </RecentGroup>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="origin/main" />
+                </option>
+              </RecentGroup>
+            </list>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="Temp" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="temporary version" />
+    <MESSAGE value="parallelizing convertToGrayScale" />
+    <option name="LAST_COMMIT_MESSAGE" value="parallelizing convertToGrayScale" />
+  </component>
+</project>
