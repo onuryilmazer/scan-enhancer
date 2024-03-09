@@ -80,7 +80,10 @@ void BatchProcessor::processFolder() {
 
 void BatchProcessor::benchmark_nrOfThreads() {
     std::ofstream csvFile{"threads_benchmark.csv"};
+    std::ofstream csvFile_grayscale{"threads_benchmark_grayscale.csv"};
     csvFile << "number_of_threads, runtime_in_seconds\n";
+    csvFile_grayscale << "number_of_threads, runtime_in_seconds\n";
+
 
     int nrOfThreads_original = cli.getNumberOfThreads();
     int nrOfThreads_max = omp_get_num_procs() * 2;
@@ -91,10 +94,21 @@ void BatchProcessor::benchmark_nrOfThreads() {
 
     for(int i = 1; i < nrOfThreads_max; i++) {
         cli.setNumberOfThreads(i);
+
         double startingTime = omp_get_wtime();
         processFolder();
         double runtime = omp_get_wtime() - startingTime;
+
         csvFile << i << ", " << runtime << "\n";
+
+        EnhancerImage BenchmarkImage("project/benchmarks/grayscale_BM");
+
+        double startingTime_grayscale = omp_get_wtime();
+        BenchmarkImage.convertToGrayscale(i);
+        double runtime_grayscale = omp_get_wtime() - startingTime_grayscale;
+
+        csvFile_grayscale << i << ", " << runtime_grayscale << "\n";
+
     }
 
     std::cout << "Benchmark completed" << std::endl;
