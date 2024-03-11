@@ -26,7 +26,10 @@
   <component name="ChangeListManager">
     <list default="true" id="3d29f5fe-d18e-467e-8ffd-3fcce362b3b5" name="Changes" comment="create benchmark for parallel GrayScaleConvert">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/project/benchmarks/grayscale_BM/big_file.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/paper/.gitkeep" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/paper/graphics/integer_sets.pdf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/paper/paper.pdf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/paper/paper.tex" beforeDir="false" afterPath="$PROJECT_DIR$/paper/paper.tex" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -91,11 +94,6 @@
         <option name="BeforeTestRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="catch2" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="ENHANCER" TARGET_NAME="catch2" CONFIG_NAME="Debug">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
@@ -140,7 +138,8 @@
       <option name="presentableId" value="Default" />
       <updated>1709983390387</updated>
       <workItem from="1709983391391" duration="5336000" />
-      <workItem from="1710002710898" duration="679000" />
+      <workItem from="1710002710898" duration="966000" />
+      <workItem from="1710155348556" duration="7443000" />
     </task>
     <task id="LOCAL-00001" summary="create benchmark for parallel GrayScaleConvert">
       <option name="closed" value="true" />
@@ -166,7 +165,23 @@
       <option name="project" value="LOCAL" />
       <updated>1710005813808</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="create benchmark for parallel GrayScaleConvert">
+      <option name="closed" value="true" />
+      <created>1710006072654</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1710006072654</updated>
+    </task>
+    <task id="LOCAL-00005" summary="create benchmark for parallel GrayScaleConvert">
+      <option name="closed" value="true" />
+      <created>1710006096073</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1710006096073</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
