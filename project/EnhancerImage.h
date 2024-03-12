@@ -30,7 +30,7 @@ public:
 
     bool convertToGrayscale(int nrOfThreads);
 
-    bool applyAdaptiveThresholding(int nrOfThreads, double windowSize, double tresholdPercentage);
+    bool applyAdaptiveThresholding(int nrOfThreads_grayscaleConversion, double windowSize, double tresholdPercentage);
 
 private:
     unsigned char* data;

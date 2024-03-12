@@ -12,7 +12,8 @@ public:
     void benchmark_nrOfThreads();
 
 private:
-    void processFolder();
+    enum OperationType {GrayscaleConversion, AdaptiveThresholding};
+    void processFolder(BatchProcessor::OperationType type);
     CommandLineInterface& cli;
 };
 

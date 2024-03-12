@@ -12,7 +12,8 @@
 #include "termcolor.hpp"
 
 CommandLineInterface::CommandLineInterface(int argc, char** argv): argc(argc), argv(argv), windowWidth(0.125), thresholdPercentage(0.15) {
-    numberOfThreads = omp_get_num_procs();
+    numberOfThreads_adaptiveThresholding = omp_get_num_procs();
+    numberOfThreads_grayscaleConversion = 1;
     parseArguments();
 }
 
@@ -21,13 +22,15 @@ void CommandLineInterface::printHelp() {
                                 "Usage syntax:", "",
                                 "--interactive:", "This starts the program in the interactive mode, where you will be guided to provide all the necessary information.",
                                 "-i, --inputPath <path>:", "Path of the folder that contains your scanned images.",
-                                "-o, --outputDirectory <name>:", "Name of the folder in which your enhanced images are going to be saved in.",
+                                "-o, --outputDirectory <name>:", "Name of the folder in which your enhanced images are going to be saved in (will be automatically created inside the inputPath).",
                                 "-w, --windowWidth <val>:", "[Optional] The window width that will be used in the adaptive thresholding method. This is a number between 0-1 and it is defined in terms of the width of the image, e.g. 0.125 (one-eighth).",
                                 "-t, --thresholdPercentage <val>:", "[Optional] The threshold percentage that will be used in the adaptive thresholding method. This is a number between 0-1 and it is defined as a percentage, e.g. 0.15 (fifteen percent).",
-                                "-nt, --numberOfThreads <val>", "[Optional] Allows you to set the number of threads that will be created by the program when processing images. Default is the number of logical cores. Set this to 1 if you want the program to run sequentially.",
+                                "-nt_a, --numberOfThreads_adaptiveThresholding <val>", "[Optional] Allows you to set the number of threads that will be created by the program when processing individual image files. Default is the number of logical cores. Set this to 1 if you want the program to run sequentially.",
+                                "-nt_g, --numberOfThreads_grayscaleConversion <val>", "[Optional] Allows you to set the number of threads that will be created by the program when converting a single image into grayscale. Default is 1.",
                                 "-v, --verbose <true/false>", "[Optional] Print debugging information (default = true)",
-                                "-bm, --benchmark", "[Optional] Run a benchmark that tests the change in runtime depending on the number of threads used. You can plot the resulting CSV file using your scripting language of choice, like Python or R. (default = false)",
-                                "-h, --help:", "Show help."
+                                "-bm, --benchmark", "[Optional] Run benchmarks that tests the change in runtime depending on the number of threads used. There are currently 3 benchmarks that test the grayscale conversion speed in isolation, adaptive thresholding speed with one level of parallelization and adaptive thresholding with two levels of parallelization. You can plot the resulting CSV file using your scripting language of choice, like Python or R.",
+                                "-h, --help:", "Show help.",
+                                "Usage example: ", "./enhancer.exe --inputPath test_input --outputPath test_output"
                               };
 
     print_twoColumnsLayout(lines);
@@ -40,6 +43,7 @@ void CommandLineInterface::parseArguments() {
 
     std::string errorMessages;
 
+    //the first element of the argv array is the name of the file, e.g. "enhancer.exe" - we are not interested in that so the loop starts from 1.
     for(int i = 1; i < argc; i++) {
         std::string arg = argv[i];  //get the current argument.
 
@@ -77,11 +81,19 @@ void CommandLineInterface::parseArguments() {
                 }
             }
         }
-        else if (arg == "-nt" || arg == "--numberOfThreads") {
+        else if (arg == "-nt_a" || arg == "--numberOfThreads_adaptiveThresholding") {
             if (i + 1 < argc) {
                 std::istringstream numberstream(argv[++i]);
-                if (!(numberstream >> numberOfThreads)) {
-                    errorMessages += "Invalid --numberOfThreads argument.\n";
+                if (!(numberstream >> numberOfThreads_adaptiveThresholding)) {
+                    errorMessages += "Invalid --numberOfThreads_adaptiveThresholding argument.\n";
+                }
+            }
+        }
+        else if (arg == "-nt_g" || arg == "--numberOfThreads_grayscaleConversion") {
+            if (i + 1 < argc) {
+                std::istringstream numberstream(argv[++i]);
+                if (!(numberstream >> numberOfThreads_grayscaleConversion)) {
+                    errorMessages += "Invalid --numberOfThreads_grayscaleConversion argument.\n";
                 }
             }
         }
@@ -147,7 +159,7 @@ bool CommandLineInterface::validateInput(std::string& errorMessages) {
         valid = false;
     }
 
-    if (numberOfThreads <= 0) {
+    if (numberOfThreads_adaptiveThresholding <= 0 || numberOfThreads_grayscaleConversion <= 0) {
         errorMessages += "Number of threads must be positive.\n";
         valid = false;
     }
@@ -267,6 +279,48 @@ void CommandLineInterface::startInteractiveMode() {
         }
     }
 
+    int threads_adaptive = omp_get_num_procs();
+    while(true) {
+        std::cout << "Enter the number of threads that should be created when processing image files (press enter for the default value of all logical cores): ";
+        std::getline(std::cin, input);
+        if (input.empty()) {
+            numberOfThreads_adaptiveThresholding = threads_adaptive;
+            break;
+        }
+        else {
+            std::istringstream percentstream(input);
+            if (! (percentstream >> threads_adaptive) || threads_adaptive < 0) {
+                std::cout << "Please enter a positive integer. \n";
+                continue;
+            }
+            else {
+                numberOfThreads_adaptiveThresholding = threads_adaptive;
+                break;
+            }
+        }
+    }
+
+    int threads_grayscale = 1;
+    while(true) {
+        std::cout << "Enter the number of threads that should be created when converting a single image file into grayscale (press enter for the default value of 1): ";
+        std::getline(std::cin, input);
+        if (input.empty()) {
+            numberOfThreads_grayscaleConversion = threads_grayscale;
+            break;
+        }
+        else {
+            std::istringstream percentstream(input);
+            if (! (percentstream >> threads_grayscale) || threads_grayscale < 0) {
+                std::cout << "Please enter a positive integer. \n";
+                continue;
+            }
+            else {
+                numberOfThreads_grayscaleConversion = threads_grayscale;
+                break;
+            }
+        }
+    }
+
     std::string answer;
     while(true) {
         std::cout << "Do you want the debug information to be printed? Y/n: \n";
@@ -289,12 +343,20 @@ void CommandLineInterface::startInteractiveMode() {
 }
 
 
-const std::string& CommandLineInterface::getInputPath() {
+const std::string CommandLineInterface::getInputPath() {
     return inputPath;
 }
 
-const std::string& CommandLineInterface::getOutputDirectory() {
+const void CommandLineInterface::setInputPath(std::string path) {
+    inputPath = path;
+}
+
+const std::string CommandLineInterface::getOutputDirectory() {
     return outputDirectory;
+}
+
+const void CommandLineInterface::setOutputDirectory(std::string directory) {
+    outputDirectory = directory;
 }
 
 const double CommandLineInterface::getWindowWidth() {
@@ -305,12 +367,20 @@ const double CommandLineInterface::getThresholdPercentage() {
     return thresholdPercentage;
 }
 
-const int CommandLineInterface::getNumberOfThreads() {
-    return numberOfThreads;
+const int CommandLineInterface::getNumberOfThreads_adaptiveThresholding() {
+    return numberOfThreads_adaptiveThresholding;
 }
 
-void CommandLineInterface::setNumberOfThreads(int number) {
-    numberOfThreads = number;
+void CommandLineInterface::setNumberOfThreads_adaptiveThresholding(int number) {
+    numberOfThreads_adaptiveThresholding = number;
+}
+
+const int CommandLineInterface::getNumberOfThreads_grayscaleConversion() {
+    return numberOfThreads_grayscaleConversion;
+}
+
+void CommandLineInterface::setNumberOfThreads_grayscaleConversion(int number) {
+    numberOfThreads_grayscaleConversion = number;
 }
 
 void CommandLineInterface::setVerbose(bool mode) {

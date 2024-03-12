@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cstdint> //for termcolor
 #include <omp.h>
+#include <filesystem>
 
 #include "EnhancerImage.h"
 #include "stb_image.h"
@@ -44,6 +45,16 @@ bool EnhancerImage::imageIsLoaded() {
 
 //Save image in given format:
 bool EnhancerImage::saveImage(const std::string& path, Filetype type) {
+    try {
+        std::filesystem::path outputDir(path);
+        if (std::filesystem::create_directory(outputDir.parent_path())) {
+            std::cout << termcolor::green << "Created the parent directory of the image: " << termcolor::reset << outputDir << std::endl;
+        }
+    }
+    catch (std::filesystem::filesystem_error& e) {
+        std::cerr << e.what() << std::endl;
+    }
+
     int result = 0;
 
     switch (type) {
@@ -66,38 +77,6 @@ bool EnhancerImage::saveImage(const std::string& path, Filetype type) {
 
 }
 
-
-//Converts image to grayscale, single channel.
-bool EnhancerImage::convertToGrayscale(int nrOfThreads) {
-    if (nrOfChannels < 3) {
-        std::cerr << termcolor::red << "Image can't be converted to grayscale (it may already be converted)" << termcolor::reset << std::endl;
-        return false;
-    }
-
-    int imageSize = width * height * nrOfChannels;
-    int grayscale_imageSize = width * height * 1;   //alpha channel of the original image will be discarded, if it exists.
-
-    auto *grayscale_data = new unsigned char[grayscale_imageSize];
-
-    //Two pointers, one iterates over the original picture, the other one over the new grayscale image.
-    for(unsigned char *p = data, *pg = grayscale_data; p != data + imageSize; p += nrOfChannels, pg += 1) {
-        //Take the average of RGB values of the original picture's current pixel
-        //and assign it to the grayscale picture's current pixel.
-        *pg = static_cast<char>( ((*p + *(p + 1) + *(p + 2)) / 3.0) );
-    }
-
-    //release the memory used by the original image
-    stbi_image_free(data);
-
-    //update image information
-    data = grayscale_data;
-    nrOfChannels = 1;
-
-    return true;
-} // 91.752 , 318.482
-
-
-/*
 //Converts image to grayscale, single channel in parallel
 bool EnhancerImage::convertToGrayscale(int nrOfThreads) {
     if (nrOfChannels < 3) {
@@ -116,7 +95,6 @@ bool EnhancerImage::convertToGrayscale(int nrOfThreads) {
 
 #pragma omp parallel num_threads(nrOfThreads) firstprivate(PixelsPerThread)
     {
-
         int threadNum = omp_get_thread_num();
         unsigned char *p = data + (threadNum * PixelsPerThread * nrOfChannels);
         unsigned char *pg = grayscale_data + (threadNum * PixelsPerThread * 1);
@@ -144,14 +122,12 @@ bool EnhancerImage::convertToGrayscale(int nrOfThreads) {
     nrOfChannels = 1;
 
     return true;
-} // 91.304 , 303.075
-*/
+}
 
 
-
-bool EnhancerImage::applyAdaptiveThresholding(int nrOfThreads, double windowSize, double tresholdPercentage) {
+bool EnhancerImage::applyAdaptiveThresholding(int nrOfThreads_grayscaleConversion, double windowSize, double tresholdPercentage) {
     //Adaptive thresholding works on grayscale images: check if the image is suitable first (convert if not)
-    if (nrOfChannels > 1) convertToGrayscale(nrOfThreads);
+    if (nrOfChannels > 1) convertToGrayscale(nrOfThreads_grayscaleConversion);
 
     //Create the integral image (sum of brightness values within a certain area)
     auto *integralImage = new unsigned long [width*height];

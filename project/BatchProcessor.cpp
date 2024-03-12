@@ -9,15 +9,16 @@
 #include "EnhancerImage.h"
 
 BatchProcessor::BatchProcessor(CommandLineInterface& cli) : cli(cli) {
+    //run the benchmarks or start processing the files from the folder, depending on the mode the user choose.
     if (cli.benchmarkMode()) {
         benchmark_nrOfThreads();
     }
     else {
-        processFolder();
+        processFolder(BatchProcessor::OperationType::AdaptiveThresholding);
     }
 };
 
-void BatchProcessor::processFolder() {
+void BatchProcessor::processFolder(BatchProcessor::OperationType type) {
     //create the output directory, if it doesn't already exist
     try {
         std::filesystem::path outputDir(cli.getInputPath());
@@ -42,28 +43,40 @@ void BatchProcessor::processFolder() {
     }
 
     double startingTime = omp_get_wtime();
-    omp_set_num_threads(cli.getNumberOfThreads());
     int processed = 0;
 
     //iterate through the files in the given input directory
-#pragma omp parallel for schedule(dynamic, 1)
+    //we use the dynamic schedule, because the workload is not balanced; images can have greatly different sizes / resolutions
+#pragma omp parallel for schedule(dynamic, 1) num_threads(cli.getNumberOfThreads_adaptiveThresholding())
     for (int i = 0; i < files.size(); i++) {
         std::filesystem::path entry = files[i];
 
         //Load the image
         EnhancerImage image(entry.string());
 
-        //Apply the adaptive thresholding method to make the more readable
-        image.applyAdaptiveThresholding(cli.getNumberOfThreads(), cli.getWindowWidth(), cli.getThresholdPercentage());
+        std::string newFilename;
+
+        switch (type) {
+            case OperationType::AdaptiveThresholding:
+                //Apply the adaptive thresholding method to make the image more readable
+                image.applyAdaptiveThresholding(cli.getNumberOfThreads_grayscaleConversion(), cli.getWindowWidth(), cli.getThresholdPercentage());
+                newFilename = entry.stem().string()+"_binarized.jpg";
+                break;
+
+            case OperationType::GrayscaleConversion:
+                image.convertToGrayscale(cli.getNumberOfThreads_grayscaleConversion());
+                newFilename = entry.stem().string()+"_grayscale.jpg";
+                break;
+        }
 
         //Save the processed image back to the disk
-        std::string newFilename = entry.stem().string()+"_binarized.jpg";
         std::filesystem::path newPath(cli.getInputPath());
         newPath = newPath / cli.getOutputDirectory() / newFilename;  //the "/" operator of the filesystem library uses the correct separator acc. to the OS ("/" on linux "\" on windows)
-
         int result = image.saveImage(newPath.string(), EnhancerImage::jpg);
 
-        //debug
+        //debugging information (the function only prints if the user hasn't set the --verbose flag to false)
+        //we print in a critical section, to make sure that the output is correctly displayed.
+        //printing takes very little time compared to processing so the critical section should not slow down the overall program too much.
 #pragma omp critical
         {
             cli.printDebugInformation(std::to_string(++processed) + " / " + std::to_string(files.size()) + " ", CommandLineInterface::MessageType::Information);
@@ -79,38 +92,59 @@ void BatchProcessor::processFolder() {
 
 
 void BatchProcessor::benchmark_nrOfThreads() {
-    std::ofstream csvFile{"threads_benchmark.csv"};
-    std::ofstream csvFile_grayscale{"threads_benchmark_grayscale.csv"};
-    csvFile << "number_of_threads, runtime_in_seconds\n";
+    std::ofstream csvFile_grayscale{"threads_benchmark_grayscaleconversion.csv"};
+    std::ofstream csvFile_adaptive{"threads_benchmark_adaptivethresholding.csv"};
+    std::ofstream csvFile_grayscaleandadaptive{"threads_benchmark_allparallelized.csv"};
+
     csvFile_grayscale << "number_of_threads, runtime_in_seconds\n";
+    csvFile_adaptive << "number_of_threads, runtime_in_seconds\n";
+    csvFile_grayscaleandadaptive << "number_of_threads, runtime_in_seconds\n";
 
+    int nrOfThreads_max = omp_get_num_procs() * 2;     //we use up to 2 times the amount of the logical cores, to show the performance effects.
+    std::string originalOutputDirectory = cli.getOutputDirectory();
 
-    int nrOfThreads_original = cli.getNumberOfThreads();
-    int nrOfThreads_max = omp_get_num_procs() * 2;
-
+    //Surpress output (we will be running the benchmarks many times)
     cli.setVerbose(false);
 
-    std::cout << "Starting benchmark" << std::endl;
-
+    std::cout << termcolor::green << "Starting benchmark 1: Parallelized grayscale conversion only" << termcolor::reset << std::endl;
+    cli.setOutputDirectory(originalOutputDirectory + "_parallelGrayscale_benchmark");
+    cli.setNumberOfThreads_adaptiveThresholding(1);  //we want the files to be processed one-by-one in this benchmark
     for(int i = 1; i < nrOfThreads_max; i++) {
-        cli.setNumberOfThreads(i);
-
-        double startingTime = omp_get_wtime();
-        processFolder();
-        double runtime = omp_get_wtime() - startingTime;
-
-        csvFile << i << ", " << runtime << "\n";
-
-        EnhancerImage BenchmarkImage("project/benchmarks/grayscale_BM");
-
+        cli.setNumberOfThreads_grayscaleConversion(i);
         double startingTime_grayscale = omp_get_wtime();
-        BenchmarkImage.convertToGrayscale(i);
+        processFolder(OperationType::GrayscaleConversion);
         double runtime_grayscale = omp_get_wtime() - startingTime_grayscale;
 
         csvFile_grayscale << i << ", " << runtime_grayscale << "\n";
-
     }
 
-    std::cout << "Benchmark completed" << std::endl;
+    std::cout << termcolor::green << "Starting benchmark 2: Parallelized adaptive thresholding and single-core grayscale conversion" << termcolor::reset << std::endl;
+    cli.setOutputDirectory(originalOutputDirectory + "_parallelAdaptiveSequentialGrayscale_benchmark");
+    cli.setNumberOfThreads_grayscaleConversion(1);
+    for(int i = 1; i < nrOfThreads_max; i++) {
+        cli.setNumberOfThreads_adaptiveThresholding(i);
 
+        double startingTime = omp_get_wtime();
+        processFolder(OperationType::AdaptiveThresholding);
+        double runtime = omp_get_wtime() - startingTime;
+
+        csvFile_adaptive << i << ", " << runtime << "\n";
+    }
+
+    std::cout << termcolor::green << "Starting benchmark 3: Parallelized adaptive thresholding and parallelized grayscale conversion" << termcolor::reset << std::endl;
+    cli.setOutputDirectory(originalOutputDirectory + "_parallelAdaptiveParallelGrayscale_benchmark");
+    for(int i = 1; i < nrOfThreads_max; i++) {
+        cli.setNumberOfThreads_adaptiveThresholding(i);
+        cli.setNumberOfThreads_grayscaleConversion(i);
+
+        double startingTime = omp_get_wtime();
+        processFolder(OperationType::AdaptiveThresholding);
+        double runtime = omp_get_wtime() - startingTime;
+
+        csvFile_grayscaleandadaptive << i << ", " << runtime << "\n";
+    }
+
+    cli.setOutputDirectory(originalOutputDirectory);
+
+    std::cout << termcolor::green << "Benchmarks are completed" << termcolor::reset << std::endl;
 }

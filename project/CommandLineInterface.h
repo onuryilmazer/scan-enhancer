@@ -18,12 +18,16 @@ public:
 
     void parseArguments();
 
-    const std::string& getInputPath();
-    const std::string& getOutputDirectory();
+    const std::string getInputPath();
+    const void setInputPath(std::string path);
+    const std::string getOutputDirectory();
+    const void setOutputDirectory(std::string directory);
     const double getWindowWidth();
     const double getThresholdPercentage();
-    const int getNumberOfThreads();
-    void setNumberOfThreads(int number);
+    const int getNumberOfThreads_adaptiveThresholding();
+    void setNumberOfThreads_adaptiveThresholding(int number);
+    const int getNumberOfThreads_grayscaleConversion();
+    void setNumberOfThreads_grayscaleConversion(int number);
     void setVerbose(bool mode);
 
     bool benchmarkMode();
@@ -45,7 +49,8 @@ private:
     double thresholdPercentage;
 
     //OpenMP-related parameters
-    int numberOfThreads;
+    int numberOfThreads_adaptiveThresholding;
+    int numberOfThreads_grayscaleConversion;
 
     //Verbose mode: whether if debugging information should be printed
     bool verbose = true;
