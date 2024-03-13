@@ -52,8 +52,8 @@ ggsave("paralleladaptive_sequentialgrayscale_benchmark.png", device = "png", wid
 
 
 #Benchmark 3
-debugdata <- read.csv("threads_benchmark_adaptivethresholding(debug).csv")
-releasedata <- read.csv("threads_benchmark_adaptivethresholding(release).csv")
+debugdata <- read.csv("threads_benchmark_allparallelized(debug).csv")
+releasedata <- read.csv("threads_benchmark_allparallelized(release).csv")
 
 debugdata$type <- "debug"
 releasedata$type <- "release"
