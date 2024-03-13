@@ -51,8 +51,12 @@ There are two modes of operation that you can use our program with.
 
   `./enhancer.exe <arguments>`
 
+- Most basic usage example to get you started:
+  
+  `./enhancer.exe --inputPath test_input --outputDirectory asd`
 
-- Required arguments:
+
+- All commandline arguments:
   
   `--inputPath <val>`: Path to the folder that contains your source images. This can be a relative path to your current working directory (e.g. input_images) or an absolute path to anywhere in your system (e.g. `C:/temp` on Windows or `/tmp` on Unix systems)
   
@@ -82,10 +86,10 @@ There are two modes of operation that you can use our program with.
 
 
 ## The results:
-- Improving bad lighting conditions:
+### Improving bad lighting conditions:
 ![beforeafter2](https://github.com/onuryilmazer/algorithmengineering-project/assets/29818337/bf741fc3-b358-4d3f-9279-14c457b32603)
 
-- Improving overall readability:
+### Improving overall readability:
 ![beforeafter1](https://github.com/onuryilmazer/algorithmengineering-project/assets/29818337/7fa60250-d0a6-4294-b832-8c7c0789e4ba)
 
 
