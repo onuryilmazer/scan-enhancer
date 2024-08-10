@@ -1,3 +1,5 @@
+[![CMake on a single platform](https://github.com/onuryilmazer/scan-enhancer/actions/workflows/cmake-single-platform.yml/badge.svg)](https://github.com/onuryilmazer/scan-enhancer/actions/workflows/cmake-single-platform.yml)
+
 # Enhancer for scanned images
 Welcome to the project repo of "Lisa Kim Will" and "Onur Yilmazer" for the Algorithm Engineering course.
 
